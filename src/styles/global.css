@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@plugin "daisyui"{
+   themes: light;
+ }
+
+@import '@fontsource-variable/inter';
+
+body{
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 1rem;
+} 

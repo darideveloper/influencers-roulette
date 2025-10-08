@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import RouletteWheel from '../../components/RouletteWheel';
+
+const { user } = Astro.params;
+---
+
+<Layout>
+    <main class:list={
+        `flex
+        flex-col
+        items-center
+        justify-center
+        h-screen
+        relative
+        bg-[url('/images/luck-bg.jpg')]
+        bg-cover
+        bg-center
+        bg-no-repeat
+        `
+    }>
+</main>
+</Layout>
