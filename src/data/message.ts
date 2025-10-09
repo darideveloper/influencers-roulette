@@ -1,0 +1,17 @@
+export const message = {
+    title: "🎰 RULETA DE PREMIOS 🎰",
+    subtitle: "Bienvenido a la ruleta de premios",
+    username: "Username",
+    email: "Email",
+    spin: "🎯 SPIN",
+    win: "🎉 Congratulations! 🎉",
+    lose: "😢 Sorry!",
+    tooManyRequests: "😢 Too many requests! Please try again later.",
+    error: "😢 Error",
+    ok: "OK",
+    close: "Close",
+    enterUsername: "👤 Enter your username",
+    enterEmail: "📧 Enter your email",
+    enterUsernameAndEmail: "👤 Enter your username and email",
+    enterUsernameAndEmailToSpin: "👤 Enter your username and email to spin the wheel!",
+};
