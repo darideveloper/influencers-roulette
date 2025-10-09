@@ -94,15 +94,21 @@ export default function RouletteGame({ user }) {
   };
 
   return (
-    <div className="max-w-xl mx-auto w-full">
+    <div className="max-w-2xl mx-auto w-full px-4">
+      {/* Icons */}
+      <div className="flex justify-center items-center gap-3 mb-4">
+        <span className="text-5xl sm:text-6xl">🍀</span>
+        <span className="text-5xl sm:text-6xl">🎁</span>
+      </div>
+
       {/* Title */}
-      <h1 className="text-3xl sm:text-4xl font-bold text-center mb-6 sm:mb-8 text-white drop-shadow-lg">
-        🎰 RULETA DE PREMIOS 🎰
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-center mb-2 text-white drop-shadow-2xl uppercase tracking-wide">
+        RULETA DE LA SUERTE
       </h1>
       
       {/* Sub title */}
-      <h2 className="text-base sm:text-lg font-bold text-center mb-6 sm:mb-8 text-white drop-shadow-lg">
-        {user}
+      <h2 className="text-lg sm:text-xl font-semibold text-center mb-8 text-white/90 drop-shadow-lg">
+        BY {user?.toUpperCase() || 'LUCII LBA'}
       </h2>
       
       {/* Input Fields */}
@@ -112,15 +118,24 @@ export default function RouletteGame({ user }) {
         onUsernameChange={setUsername}
         onEmailChange={setEmail}
       />
+
+      {/* Warning text */}
+      <p className="text-center text-white/80 text-sm mb-6 px-4">
+        Ven tu rumbo rival, seras los podras recibir el mail de tu premio.
+      </p>
       
-      {/* Wheel */}
-      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <WheelSection rotation={rotation} hasTransition={hasTransition} />
-        
-        {/* Spin Button */}
+      {/* Spin Button */}
+      <div className="mb-6">
         <SpinButton onSpin={handleSpin} isSpinning={isSpinning} />
-        
-        {/* Control Variable (for testing) */}
+      </div>
+
+      {/* Wheel */}
+      <div className="mb-6">
+        <WheelSection rotation={rotation} hasTransition={hasTransition} />
+      </div>
+
+      {/* Control Variable (for testing) - Optional, can be hidden in production */}
+      <div className="mt-4">
         <WinLoseControl shouldWin={shouldWin} onToggle={setShouldWin} />
       </div>
 

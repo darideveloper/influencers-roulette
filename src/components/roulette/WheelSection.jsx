@@ -59,8 +59,8 @@ export default function WheelSection({ rotation, hasTransition }) {
   const wheelSections = useMemo(() => generateWheelSections(), []);
 
   return (
-    <div className="wheel-container relative w-full max-w-[300px] aspect-square mx-auto">
-      <div className="pointer absolute top-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-red-500 z-20"></div>
+    <div className="wheel-container relative w-full max-w-[350px] aspect-square mx-auto">
+      <div className="pointer absolute top-[-20px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[35px] border-t-pink-500 z-20 drop-shadow-lg"></div>
       <svg 
         className={`wheel w-full h-full ${hasTransition ? 'transition-transform duration-[3000ms] ease-[cubic-bezier(0.17,0.67,0.12,0.99)]' : ''}`}
         viewBox="0 0 300 300"
