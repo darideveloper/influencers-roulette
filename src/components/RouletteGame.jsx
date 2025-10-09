@@ -94,20 +94,17 @@ export default function RouletteGame({ user }) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto w-full px-4">
+    <div className="max-w-2xl mx-auto w-full px-2 sm:px-4 flex flex-col items-center" style={{ maxHeight: '100vh' }}>
       {/* Icons */}
-      <div className="flex justify-center items-center gap-3 mb-4">
-        <span className="text-5xl sm:text-6xl">🍀</span>
-        <span className="text-5xl sm:text-6xl">🎁</span>
-      </div>
+      <img src="https://placehold.co/200x100?text=LOGO" alt="Logo" className="w-36 h-20 mb-2" />
 
       {/* Title */}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-center mb-2 text-white drop-shadow-2xl uppercase tracking-wide">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-center mb-1 text-white drop-shadow-2xl uppercase tracking-wide">
         RULETA DE LA SUERTE
       </h1>
       
       {/* Sub title */}
-      <h2 className="text-lg sm:text-xl font-semibold text-center mb-8 text-white/90 drop-shadow-lg">
+      <h2 className="text-base sm:text-lg font-semibold text-center mb-3 text-white/90 drop-shadow-lg">
         BY {user?.toUpperCase() || 'LUCII LBA'}
       </h2>
       
@@ -120,7 +117,7 @@ export default function RouletteGame({ user }) {
       />
 
       {/* Warning text */}
-      <p className="text-center text-white/80 text-sm mb-6 px-4">
+      <p className="text-center text-white/80 text-xs sm:text-sm mb-3 px-2">
         Ven tu rumbo rival, seras los podras recibir el mail de tu premio.
       </p>
       
@@ -130,12 +127,12 @@ export default function RouletteGame({ user }) {
       </div>
 
       {/* Wheel */}
-      <div className="mb-6">
+      <div className="mb-3 flex-shrink-0">
         <WheelSection rotation={rotation} hasTransition={hasTransition} />
       </div>
 
-      {/* Control Variable (for testing) - Optional, can be hidden in production */}
-      <div className="mt-4">
+      {/* Control Variable (for testing) - it will be handled by the backend */}
+      <div className="mt-2">
         <WinLoseControl shouldWin={shouldWin} onToggle={setShouldWin} />
       </div>
 
