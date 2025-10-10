@@ -1,17 +1,7 @@
 import { useMemo } from 'react';
 
-const wheelConfig = [
-  { isWin: true, color: '#4CAF50', image: 'https://emojicdn.elk.sh/%E2%9C%85?style=google' },
-  { isWin: false, color: '#FF6B6B', image: 'https://emojicdn.elk.sh/%E2%9D%8C?style=google' },
-  { isWin: true, color: '#4CAF50', image: 'https://emojicdn.elk.sh/%E2%9C%85?style=google' },
-  { isWin: false, color: '#FF6B6B', image: 'https://emojicdn.elk.sh/%E2%9D%8C?style=google' },
-  { isWin: true, color: '#4CAF50', image: 'https://emojicdn.elk.sh/%E2%9C%85?style=google' },
-  { isWin: false, color: '#FF6B6B', image: 'https://emojicdn.elk.sh/%E2%9D%8C?style=google' },
-  { isWin: true, color: '#4CAF50', image: 'https://emojicdn.elk.sh/%E2%9C%85?style=google' },
-];
-
 // Generate wheel sections - this runs once and is memoized
-const generateWheelSections = () => {
+const generateWheelSections = (wheelConfig) => {
   const sections = wheelConfig.length;
   const anglePerSection = 360 / sections;
   const wheelSections = [];
@@ -54,9 +44,9 @@ const generateWheelSections = () => {
   return wheelSections;
 };
 
-export default function WheelSection({ rotation, hasTransition }) {
+export default function WheelSection({ rotation, hasTransition, wheelConfig }) {
   // Generate wheel sections once and memoize
-  const wheelSections = useMemo(() => generateWheelSections(), []);
+  const wheelSections = useMemo(() => generateWheelSections(wheelConfig), [wheelConfig]);
 
   return (
     <div className="wheel-container relative w-full max-w-[350px] aspect-square mx-auto">
@@ -99,6 +89,4 @@ export default function WheelSection({ rotation, hasTransition }) {
     </div>
   );
 }
-
-export { wheelConfig };
 

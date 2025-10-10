@@ -4,12 +4,17 @@ import Background from '../../components/Background.astro';
 import RouletteGame from '../../components/RouletteGame';
 
 const { user } = Astro.params;
+
+// Fetch wheel data server-side to preload it
+const wheelDataResponse = await fetch(`${Astro.url.origin}/api/wheel-data`);
+const wheelDataResult = await wheelDataResponse.json();
+const wheelData = wheelDataResult.success ? wheelDataResult.data : [];
 ---
 
 <Layout>
     <Background />
     
     <main class="h-screen overflow-y-auto relative z-10 flex items-center justify-center py-4 px-2 sm:px-4">
-        <RouletteGame client:load user={user} />
+        <RouletteGame client:load user={user} wheelData={wheelData} />
     </main>
 </Layout>
