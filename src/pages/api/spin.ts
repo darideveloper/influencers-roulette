@@ -5,6 +5,83 @@ import type { APIRoute } from 'astro';
 const rateLimitStore: Record<string, { count: number; resetTime: number }> = {};
 
 export const POST: APIRoute = async ({ request }) => {
+
+
+  // Simullate backend api responses
+
+  const responseOkWin = new Response(
+    JSON.stringify({
+      status: "ok",
+      message: "can spin",
+      data: {
+        "shouldWin": true,
+        "canSpin": true,
+        "canExtraSpin": true,
+      }
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  const responseOkLose = new Response(
+    JSON.stringify({
+      status: "ok",
+      message: "can spin",
+      data: {
+        "shouldWin": false,
+        "canSpin": true,
+        "canExtraSpin": true,
+      }
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  const responseNoSpin = new Response(
+    JSON.stringify({
+      status: "error",
+      message: "can't spin",
+      data: {
+        "shouldWin": false,
+        "canSpin": false,
+        "canExtraSpin": false,
+      }
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  const responseExtra = new Response(
+    JSON.stringify({
+      status: "error",
+      message: "can't spin",
+      data: {
+        "shouldWin": false,
+        "canSpin": true,
+        "canExtraSpin": false,
+      }
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+
   try {
     const body = await request.json();
     const { username, email } = body;
