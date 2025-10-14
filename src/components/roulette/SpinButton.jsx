@@ -4,7 +4,7 @@ export default function SpinButton({ onSpin, isSpinning }) {
       <button 
         onClick={onSpin}
         disabled={isSpinning}
-        className="bg-gradient-to-r from-pink-500 to-pink-600 text-white font-black py-2 px-12 text-xl sm:text-xl rounded-full hover:from-pink-600 hover:to-pink-700 transition transform hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-2xl uppercase tracking-wider"
+        className="bg-gradient-to-r from-pink-500 to-pink-600 text-white font-black py-2 px-12 text-xl sm:text-xl rounded-full hover:from-pink-600 hover:to-pink-700 transition transform hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-2xl uppercase tracking-wider hover:!cursor-pointer mb-6"
       >
         {isSpinning ? 'GIRANDO...' : 'GIRAR'}
       </button>
