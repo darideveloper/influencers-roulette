@@ -1,9 +1,14 @@
 ---
+interface BackgroundProps {
+  src: string
+}
+
+const { src } = Astro.props as BackgroundProps
 ---
 
-<div class:list={ [
+<div
+  class:list={[
     `background-image`,
-    `bg-[url('/images/luck-bg.jpg')]`,
     `bg-cover`,
     `bg-center`,
     `bg-no-repeat`,
@@ -12,12 +17,13 @@
     `h-full`,
     `w-full`,
     `object-cover`,
-    "z-[-1]",
-    "brightness-50",
+    'z-[-1]',
+    'brightness-50',
     "before:content-['']",
-    "before:absolute",
-    "before:inset-0",
-    "before:bg-black/40"
-]
-}>
+    'before:absolute',
+    'before:inset-0',
+    'before:bg-black/40',
+  ]}
+  style={{ backgroundImage: `url(${src})` }}
+>
 </div>

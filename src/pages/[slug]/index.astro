@@ -24,14 +24,8 @@ const wheelDataResponse = await fetch(`${Astro.url.origin}/api/wheel-data`);
 const wheelDataResult = await wheelDataResponse.json();
 const wheelData = wheelDataResult.success ? wheelDataResult.data : [];
 ---
-
-<!-- Render roulette or error page -->
-{
-
-}
-
 <Layout>
-    <Background />
+    <Background src={rouletteData.data.bg_image} />
     
     <main class="h-screen overflow-y-auto relative z-10 flex items-center justify-center py-4 px-2 sm:px-4">
         <RouletteGame client:load user={slug} wheelData={wheelData} />

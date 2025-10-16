@@ -1,6 +1,4 @@
 export async function getRouletteData(rouletteSlug: string) {
-  console.log({ rouletteSlug })
-
   const myHeaders = new Headers()
   myHeaders.append('Authorization', `Token ${import.meta.env.VITE_API_TOKEN}`)
 
@@ -13,6 +11,5 @@ export async function getRouletteData(rouletteSlug: string) {
     }
   )
   const data = await response.json()
-  console.log({ response, data })
   return data
 }
