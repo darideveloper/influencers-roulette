@@ -1,9 +1,23 @@
 ---
+// Components
 import Layout from '../../layouts/Layout.astro';
 import Background from '../../components/Background.astro';
 import RouletteGame from '../../components/RouletteGame';
 
-const { user } = Astro.params;
+// Libs
+import { getRouletteData } from '../../libs/api/roulette';
+
+// Params
+const { slug } = Astro.params as { slug: string };
+
+// Get roulette data
+const rouletteData = await getRouletteData(slug);
+console.log({rouletteData});
+
+// Redirect to 404 if roulette data is not found
+if (rouletteData.status == 'error') {
+    return Astro.redirect('/404');
+}
 
 // Fetch wheel data server-side to preload it
 const wheelDataResponse = await fetch(`${Astro.url.origin}/api/wheel-data`);
@@ -11,10 +25,15 @@ const wheelDataResult = await wheelDataResponse.json();
 const wheelData = wheelDataResult.success ? wheelDataResult.data : [];
 ---
 
+<!-- Render roulette or error page -->
+{
+
+}
+
 <Layout>
     <Background />
     
     <main class="h-screen overflow-y-auto relative z-10 flex items-center justify-center py-4 px-2 sm:px-4">
-        <RouletteGame client:load user={user} wheelData={wheelData} />
+        <RouletteGame client:load user={slug} wheelData={wheelData} />
     </main>
 </Layout>
