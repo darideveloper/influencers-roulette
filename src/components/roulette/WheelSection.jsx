@@ -45,6 +45,7 @@ const generateWheelSections = (wheelConfig) => {
 };
 
 export default function WheelSection({ rotation, hasTransition, wheelConfig }) {
+  
   // Generate wheel sections once and memoize
   const wheelSections = useMemo(() => generateWheelSections(wheelConfig), [wheelConfig]);
 

@@ -11,7 +11,7 @@ import { message } from '../data/message'
 import { validateUser } from '../libs/api/validation'
 import { spinUser } from '../libs/api/spin'
 
-export default function RouletteGame({ user, wheelData }) {
+export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [isSpinning, setIsSpinning] = useState(false)
@@ -191,19 +191,19 @@ export default function RouletteGame({ user, wheelData }) {
     >
       {/* Icons */}
       <img
-        src='https://placehold.co/200x100?text=LOGO'
+        src={rouletteData.logo}
         alt='Logo'
-        className='w-36 h-20 mb-4'
+        className='h-20 w-auto mb-4'
       />
 
       {/* Title */}
       <h1 className='text-2xl sm:text-3xl md:text-4xl font-black text-center mb-1 text-white drop-shadow-2xl uppercase tracking-wide'>
-        {message.title}
+        {rouletteData.name}
       </h1>
 
       {/* Sub title */}
       <h2 className='text-base sm:text-xl font-bold text-center mb-3 text-white/90 drop-shadow-lg py-2'>
-        by {user?.toUpperCase()}
+        {rouletteData.subtitle || ''}
       </h2>
 
       {/* Input Fields */}
@@ -216,7 +216,7 @@ export default function RouletteGame({ user, wheelData }) {
 
       {/* Warning text */}
       <p className='text-center text-white/80 text-xs sm:text-sm mb-3 px-2'>
-        Ven tu rumbo rival, seras los podras recibir el mail de tu premio.
+        {rouletteData.bottom_text || ''}
       </p>
 
       {/* Spin Button */}
@@ -233,7 +233,7 @@ export default function RouletteGame({ user, wheelData }) {
         <WheelSection
           rotation={rotation}
           hasTransition={hasTransition}
-          wheelConfig={wheelData}
+          wheelConfig={rouletteData.wheel_data}
         />
       </div>
 
