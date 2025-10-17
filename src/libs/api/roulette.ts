@@ -10,6 +10,17 @@ export async function getRouletteData(rouletteSlug: string) {
       redirect: 'follow',
     }
   )
+
+  // Debug response if error
+  if (!response.ok) {
+    console.error('Error fetching roulette data:', response.statusText)
+    return {
+      status: 'error',
+      message: 'Error fetching roulette data',
+    }
+  }
+
+
   const data = await response.json()
 
   // Format wheel data
