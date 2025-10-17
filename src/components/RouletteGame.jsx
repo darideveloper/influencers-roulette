@@ -42,7 +42,8 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [isExtraSpinning, setIsExtraSpinning] = useState(false)
 
   // Main app status
-  const [appStatus, setAppStatus] = useState('validate') // validating, spinning, extra_spinning
+  // validating, spinning, extra_spinning, ready_to_spin, ready_to_extra_spin
+  const [appStatus, setAppStatus] = useState('validating')
 
   // google ads
   const adsCode = `<script
@@ -133,6 +134,7 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
         'Gira la ruleta y podrás ganar un increible premio!',
         'CONTINUAR',
       )
+      setAppStatus('ready_to_spin')
     }
   }
 
@@ -175,8 +177,10 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   useEffect(() => {
     const statusText = {
       validating: 'VALIDAR',
-      spinning: 'GIRAR',
-      extra_spinning: 'GIRAR',
+      ready_to_spin: 'GIRAR',
+      ready_to_extra_spin: 'GIRAR EXTRA',
+      extra_spinning: 'GIRANDO...',
+      spinning: 'GIRANDO...',
     }
     setSpinButtonText(statusText[appStatus])
   }, [appStatus])
@@ -360,7 +364,7 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       {/* Ad model*/}
       <AdModal
         addHtmlCode={adsCode}
-        onClose={() => setAdModalVisible(false)}
+        onClose={() => {setAdModalVisible(false); setAppStatus('ready_to_extra_spin')}}
         isOpen={adModalVisible}
       />
     </div>
