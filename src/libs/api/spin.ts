@@ -1,32 +1,33 @@
-export async function spinUser(username: string, email: string) {
-    const responses = [
-        // lose
-        {   
-            status: "ok",
-            message: "lose",
-            data: {
-                "isWin": false,
-            },
-            statusCode: 200
-        },
-        // win
-        {
-            status: "ok",
-            message: "win",
-            data: {
-                "isWin": true,
-            },
-            statusCode: 200
-        },
-        // error
-        // {
-        //     status: "error",
-        //     message: "error",
-        //     data: {},
-        //     statusCode: 400
-        // },
-    ]
-    const response = responses[Math.floor(Math.random() * responses.length)];
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return response
+export async function spinUser(
+  username: string,
+  email: string,
+  rouletteSlug: string,
+  isExtraSpin: boolean
+) {
+  const myHeaders = new Headers()
+  myHeaders.append('Content-Type', 'application/json')
+  myHeaders.append('Authorization', `Token ${import.meta.env.PUBLIC_API_TOKEN}`)
+
+  console.log({ username, email, rouletteSlug, isExtraSpin })
+  
+  const raw = JSON.stringify({
+    name: username,
+    email: email,
+    roulette: rouletteSlug,
+    is_extra_spin: isExtraSpin,
+  })
+
+
+  const response = await fetch(
+    `${import.meta.env.PUBLIC_API_BASE}/participant/spin/`,
+    {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    }
+  )
+  const data = await response.json()
+  console.log({ data })
+  return data
 }

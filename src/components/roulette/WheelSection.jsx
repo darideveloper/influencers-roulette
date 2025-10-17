@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 // Generate wheel sections - this runs once and is memoized
 const generateWheelSections = (wheelConfig) => {
@@ -44,7 +45,21 @@ const generateWheelSections = (wheelConfig) => {
   return wheelSections;
 };
 
-export default function WheelSection({ rotation, hasTransition, wheelConfig }) {
+export default function WheelSection({ status = 'ready_to_spin', wheelConfig, onSpinEnd = () => {}}) {
+
+  const [rotation, setRotation] = useState(0)
+
+  useEffect(() => {
+    if (status === 'spinning' || status === 'extra_spinning') {
+      // Show roation animation
+      setRotation(360 * 3)
+
+      // Run onSpinEnd callback when animation ends
+      setTimeout(() => {
+        onSpinEnd()
+      }, 3000)
+    }
+  }, [status])
   
   // Generate wheel sections once and memoize
   const wheelSections = useMemo(() => generateWheelSections(wheelConfig), [wheelConfig]);
@@ -53,7 +68,7 @@ export default function WheelSection({ rotation, hasTransition, wheelConfig }) {
     <div className="scale-75 -mt-12 xs:scale-100 xs:mt-0 wheel-container relative w-full max-w-[350px] aspect-square mx-auto">
       <div className="pointer absolute top-[-20px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[35px] border-t-pink-500 z-20 drop-shadow-lg"></div>
       <svg 
-        className={`wheel w-full h-full ${hasTransition ? 'transition-transform duration-[3000ms] ease-[cubic-bezier(0.17,0.67,0.12,0.99)]' : ''}`}
+        className={`wheel w-full h-full transition-transform duration-[3000ms] ease-[cubic-bezier(0.17,0.67,0.12,0.99)]' : ''}`}
         viewBox="0 0 300 300"
         style={{ transform: `rotate(${rotation}deg)` }}
       >

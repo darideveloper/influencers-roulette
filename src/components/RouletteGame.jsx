@@ -15,14 +15,11 @@ import { spinUser } from '../libs/api/spin'
 export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
-  const [isSpinning, setIsSpinning] = useState(false)
-  const [rotation, setRotation] = useState(0)
   const [result, setResult] = useState(null)
   const [hasTransition, setHasTransition] = useState(true)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [showResultModal, setShowResultModal] = useState(false)
   const [showRateLimitModal, setShowRateLimitModal] = useState(false)
-  const [remainingMinutes, setRemainingMinutes] = useState(5)
   const [spinButtonText, setSpinButtonText] = useState('VALIDAR')
 
   // Spin button state
@@ -34,6 +31,7 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [modalButtonText, setModalButtonText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
   const [modalShowAdButton, setModalShowAdButton] = useState(false)
+  const [modelRefreshAfterClose, setModelRefreshAfterClose] = useState(false)
 
   // Modals ads state
   const [adModalVisible, setAdModalVisible] = useState(false)
@@ -42,8 +40,11 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [isExtraSpinning, setIsExtraSpinning] = useState(false)
 
   // Main app status
-  // validating, spinning, extra_spinning, ready_to_spin, ready_to_extra_spin
+  // validating, ready_to_spin, ready_to_extra_spin, spinning, extra_spinning, after_spin, win, lose
   const [appStatus, setAppStatus] = useState('validating')
+
+  // Award state
+  const [award, setAward] = useState(null)
 
   // google ads
   const adsCode = `<script
@@ -73,13 +74,15 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
     title = '',
     message = '',
     buttonText = '',
-    showAdButton = false
+    showAdButton = false,
+    refreshAfterClose = false
   ) {
     setModalTitle(title)
     setModalMessage(message)
     setModalButtonText(buttonText)
     setModalVisible(true)
     setModalShowAdButton(showAdButton)
+    setModelRefreshAfterClose(refreshAfterClose)
   }
 
   // Spin handlers
@@ -96,21 +99,13 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       return
     }
 
-    // Validate remaining spins
-    console.log({ response: response.data, isExtraSpinning: isExtraSpinning })
-
-
     // No allow to regular spin if can't spin
     if (
       !isExtraSpinning &&
       !response.data.can_spin &&
       !response.data.can_spin_ads
     ) {
-      showModal(
-        '⚠️ Error',
-        rouletteData.data.message_no_spins,
-        'OK'
-      )
+      showModal('⚠️ Error', rouletteData.message_no_spins, 'OK')
       return
     }
 
@@ -132,21 +127,37 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       showModal(
         '¿Listo para ganar?',
         'Gira la ruleta y podrás ganar un increible premio!',
-        'CONTINUAR',
+        'CONTINUAR'
       )
       setAppStatus('ready_to_spin')
     }
   }
 
   async function handleSpinUser() {
-    const response = await spinUser(username, email)
-    if (response.statusCode === 400) {
-      setShowErrorModal(true)
+    // Updatye status
+    console.log({ appStatus })
+    if (appStatus === 'ready_to_spin') {
+      setAppStatus('spinning')
+    } else if (appStatus === 'ready_to_extra_spin') {
+      setAppStatus('extra_spinning')
     } else {
-      setResult(response.data.isWin ? 'win' : 'lose')
-      setShowResultModal(true)
-      // setIsSpinning(false)
+      return
     }
+
+    const response = await spinUser(
+      username,
+      email,
+      rouletteData.slug,
+      isExtraSpinning
+    )
+    if (response.status !== 'success') {
+      showModal('⚠️ Error', response.message, 'OK')
+      return
+    }
+
+    if (response.data.award) {
+      setAward(response.data.award)
+    } 
   }
 
   // Prevent body scroll when modal is open
@@ -173,21 +184,50 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
     setAppStatus('validating')
   }, [username, email])
 
-  // Handle spin button text when status changes
   useEffect(() => {
+    // Handle spin button text when status changes
     const statusText = {
       validating: 'VALIDAR',
       ready_to_spin: 'GIRAR',
-      ready_to_extra_spin: 'GIRAR EXTRA',
+      ready_to_extra_spin: 'GIRAR',
       extra_spinning: 'GIRANDO...',
       spinning: 'GIRANDO...',
     }
     setSpinButtonText(statusText[appStatus])
+
+    // Update status to "win" or "lose" based if there is an award
+    if (appStatus === 'after_spin') {
+      if (award) {
+        setAppStatus('win')
+      } else {
+        setAppStatus('lose')
+      }
+    }
+
+    // Show result modal when status is win or lose
+    if (appStatus === 'win') {
+      showModal(
+        '🎉 ¡Felicidades! 🎉',
+        rouletteData.message_win.replace('{award_name}', award.name),
+        'SEGUIR PARTICIPANDO',
+        false,
+        true
+      )
+    } else if (appStatus === 'lose') {
+      showModal(
+        '😢 Sorry!',
+        rouletteData.message_lose,
+        'SEGUIR PARTICIPANDO',
+        false,
+        true
+      )
+    }
   }, [appStatus])
 
   const handleSpin = async () => {
     // No spin if already spinning
-    if (isSpinning) return
+    if (appStatus === 'spinning' || appStatus === 'extra_spinning')
+      return;
 
     // set spin button to spinning
     // setIsSpinning(true)
@@ -340,9 +380,9 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       {/* Wheel */}
       <div className='mb-3 flex-shrink-0'>
         <WheelSection
-          rotation={rotation}
-          hasTransition={hasTransition}
           wheelConfig={rouletteData.wheel_data}
+          status={appStatus}
+          onSpinEnd={() => setAppStatus('after_spin')}
         />
       </div>
 
@@ -359,12 +399,17 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
           setModalVisible(false)
           console.log('onAdButtonClick')
         }}
+        refreshAfterClose={modelRefreshAfterClose}
       />
 
       {/* Ad model*/}
       <AdModal
         addHtmlCode={adsCode}
-        onClose={() => {setAdModalVisible(false); setAppStatus('ready_to_extra_spin')}}
+        onClose={() => {
+          setAdModalVisible(false)
+          setAppStatus('ready_to_extra_spin')
+          setIsExtraSpinning(true)
+        }}
         isOpen={adModalVisible}
       />
     </div>

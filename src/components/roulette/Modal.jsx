@@ -5,6 +5,7 @@ export default function Modal({
   message,
   buttonText,
   showAdButton = false,
+  refreshAfterClose = false,
   onAdButtonClick = () => {},
 }) {
   return (
@@ -17,14 +18,22 @@ export default function Modal({
         <p className='text-lg text-center py-4'>{message}</p>
         <div className='modal-action justify-center'>
           <button
-            onClick={() => onClose()}
+            onClick={() => {
+              onClose()
+              if (refreshAfterClose) {
+                window.location.reload()
+              }
+            }}
             className='btn btn-primary'
           >
             {buttonText}
           </button>
           {showAdButton && (
             <button
-              onClick={() => { onAdButtonClick(); onClose() }}
+              onClick={() => {
+                onAdButtonClick()
+                onClose()
+              }}
               className='btn btn-secondary'
             >
               Giro Extra
