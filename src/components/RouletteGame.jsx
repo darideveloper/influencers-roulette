@@ -6,6 +6,7 @@ import ErrorModal from './roulette/ErrorModal'
 import ResultModal from './roulette/ResultModal'
 import RateLimitModal from './roulette/RateLimitModal'
 import Modal from './roulette/Modal'
+import AdModal from './roulette/AdModal'
 
 // Libs
 import { validateUser } from '../libs/api/validation'
@@ -32,6 +33,10 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [modalMessage, setModalMessage] = useState('')
   const [modalButtonText, setModalButtonText] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
+  const [modalShowAdButton, setModalShowAdButton] = useState(false)
+
+  // Modals ads state
+  const [adModalVisible, setAdModalVisible] = useState(false)
 
   // Spinning status
   const [isExtraSpinning, setIsExtraSpinning] = useState(false)
@@ -45,8 +50,6 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
         src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4509450751077172'
         crossorigin='anonymous'
       ></script>
-
-      {/* Test add */}
       <ins
         class='adsbygoogle'
         style='display:block'
@@ -65,11 +68,17 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   }
 
   // Modal functions
-  function showModal(title = '', message = '', buttonText = '') {
+  function showModal(
+    title = '',
+    message = '',
+    buttonText = '',
+    showAdButton = false
+  ) {
     setModalTitle(title)
     setModalMessage(message)
     setModalButtonText(buttonText)
     setModalVisible(true)
+    setModalShowAdButton(showAdButton)
   }
 
   // Spin handlers
@@ -89,30 +98,41 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
     // Validate remaining spins
     console.log({ response: response.data, isExtraSpinning: isExtraSpinning })
 
-    let canSpin = true
-    if (isExtraSpinning) {
-      if (response.data.can_spin_ads) {
-        setAppStatus('extra_spinning')
-      } else {
-        canSpin = false
-      }
-    } else {
-      if (response.data.can_spin) {
-        setAppStatus('spinning')
-      } else if (response.data.can_spin_ads) {
-        showModal(
-          '🎉 Ganar más 🎉',
-          'Ve un anuncio para ganar un giro extra',
-          'Ver anuncio'
-        )
-      } else {
-        canSpin = false
-      }
+
+    // No allow to regular spin if can't spin
+    if (
+      !isExtraSpinning &&
+      !response.data.can_spin &&
+      !response.data.can_spin_ads
+    ) {
+      showModal(
+        '⚠️ Error',
+        rouletteData.data.message_no_spins,
+        'OK'
+      )
+      return
     }
 
-    if (!canSpin) {
-      showModal('⚠️ Error', rouletteData.message_no_spins, 'Intentar más tarde')
-      return
+    // Show ad modal if can spin ads
+    if (!isExtraSpinning && response.data.can_spin_ads) {
+      showModal(
+        '🎉 Ganar más 🎉',
+        'Ve un anuncio para ganar un giro extra',
+        'Regresar',
+        true
+      )
+    }
+
+    // Show spin modal if can spin
+    if (
+      (!isExtraSpinning && response.data.can_spin) ||
+      (isExtraSpinning && response.data.can_extra_spin)
+    ) {
+      showModal(
+        '¿Listo para ganar?',
+        'Gira la ruleta y podrás ganar un increible premio!',
+        'CONTINUAR',
+      )
     }
   }
 
@@ -322,13 +342,26 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
         />
       </div>
 
-      {/* Error Modal */}
+      {/* Dinamic Modal */}
       <Modal
         isOpen={modalVisible}
         onClose={() => setModalVisible(false)}
         title={modalTitle}
         message={modalMessage}
         buttonText={modalButtonText}
+        showAdButton={modalShowAdButton}
+        onAdButtonClick={() => {
+          setAdModalVisible(true)
+          setModalVisible(false)
+          console.log('onAdButtonClick')
+        }}
+      />
+
+      {/* Ad model*/}
+      <AdModal
+        addHtmlCode={adsCode}
+        onClose={() => setAdModalVisible(false)}
+        isOpen={adModalVisible}
       />
     </div>
   )
