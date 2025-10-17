@@ -45,7 +45,5 @@ export async function getRouletteData(rouletteSlug: string) {
   // Add wheel data to data
   data.data.wheel_data = wheelData
 
-  console.log({ data })
-
   return data
 }

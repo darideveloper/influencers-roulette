@@ -17,11 +17,6 @@ const rouletteData = await getRouletteData(slug)
 if (rouletteData.status == 'error') {
   return Astro.redirect('/404')
 }
-
-// Fetch wheel data server-side to preload it
-const wheelDataResponse = await fetch(`${Astro.url.origin}/api/wheel-data`)
-const wheelDataResult = await wheelDataResponse.json()
-const wheelData = wheelDataResult.success ? wheelDataResult.data : []
 ---
 
 <Layout>
@@ -32,8 +27,6 @@ const wheelData = wheelDataResult.success ? wheelDataResult.data : []
   >
     <RouletteGame
       client:load
-      user={slug}
-      wheelData={wheelData}
       rouletteData={rouletteData.data}
     />
   </main>

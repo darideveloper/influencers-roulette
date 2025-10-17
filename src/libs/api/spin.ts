@@ -7,8 +7,6 @@ export async function spinUser(
   const myHeaders = new Headers()
   myHeaders.append('Content-Type', 'application/json')
   myHeaders.append('Authorization', `Token ${import.meta.env.PUBLIC_API_TOKEN}`)
-
-  console.log({ username, email, rouletteSlug, isExtraSpin })
   
   const raw = JSON.stringify({
     name: username,
@@ -28,6 +26,6 @@ export async function spinUser(
     }
   )
   const data = await response.json()
-  console.log({ data })
+
   return data
 }

@@ -12,7 +12,7 @@ import AdModal from './roulette/AdModal'
 import { validateUser } from '../libs/api/validation'
 import { spinUser } from '../libs/api/spin'
 
-export default function RouletteGame({ user, wheelData, rouletteData }) {
+export default function RouletteGame({ rouletteData }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [result, setResult] = useState(null)
@@ -135,7 +135,6 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
 
   async function handleSpinUser() {
     // Updatye status
-    console.log({ appStatus })
     if (appStatus === 'ready_to_spin') {
       setAppStatus('spinning')
     } else if (appStatus === 'ready_to_extra_spin') {
@@ -342,7 +341,7 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       <img
         src={rouletteData.logo}
         alt='Logo'
-        className='h-20 w-auto mb-4'
+        className='h-20 w-auto mb-4 mt-2'
       />
 
       {/* Title */}
@@ -397,7 +396,6 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
         onAdButtonClick={() => {
           setAdModalVisible(true)
           setModalVisible(false)
-          console.log('onAdButtonClick')
         }}
         refreshAfterClose={modelRefreshAfterClose}
       />
