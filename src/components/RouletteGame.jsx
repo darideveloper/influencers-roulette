@@ -5,7 +5,7 @@ import SpinButton from './roulette/SpinButton'
 import ErrorModal from './roulette/ErrorModal'
 import ResultModal from './roulette/ResultModal'
 import RateLimitModal from './roulette/RateLimitModal'
-import { message } from '../data/message'
+import Modal from './roulette/Modal'
 
 // Libs
 import { validateUser } from '../libs/api/validation'
@@ -22,20 +22,79 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
   const [showResultModal, setShowResultModal] = useState(false)
   const [showRateLimitModal, setShowRateLimitModal] = useState(false)
   const [remainingMinutes, setRemainingMinutes] = useState(5)
+  const [spinButtonText, setSpinButtonText] = useState('VALIDAR')
 
   // Spin button state
-  const [spinButtonText, setSpinButtonText] = useState('VALIDAR')
   const [spinButtonDisable, setSpinButtonDisable] = useState(true)
 
-  // Spin functions
+  // Modal state
+  const [modalTitle, setModalTitle] = useState('')
+  const [modalMessage, setModalMessage] = useState('')
+  const [modalButtonText, setModalButtonText] = useState('')
+  const [modalVisible, setModalVisible] = useState(false)
+
+  // Spinning status
+  const [isExtraSpinning, setIsExtraSpinning] = useState(false)
+
+  // Main app status
+  const [appStatus, setAppStatus] = useState('validate') // validating, spinning, extra_spinning
+
+  // Map backend messages
+  const messages = {
+    validate: {
+      'Invalid data': 'Introduce un correo válido',
+    },
+  }
+
+  // Modal functions
+  function showModal(title = '', message = '', buttonText = '') {
+    setModalTitle(title)
+    setModalMessage(message)
+    setModalButtonText(buttonText)
+    setModalVisible(true)
+  }
+
+  // Spin handlers
   async function handleValidateUser() {
-    const response = await validateUser(username, email)
-    if (response.statusCode === 400) {
-      setShowErrorModal(true)
-    } else if (response.statusCode === 403) {
-      setShowRateLimitModal(true)
+    const response = await validateUser(username, email, rouletteData.slug)
+
+    // Show validation error
+    if (response.status != 'success') {
+      showModal(
+        '⚠️ Error',
+        messages.validate[response.message] || response.message,
+        'OK'
+      )
+      return
+    }
+
+    // Validate remaining spins
+    console.log({ response: response.data, isExtraSpinning: isExtraSpinning })
+
+    let canSpin = true
+    if (isExtraSpinning) {
+      if (response.data.can_spin_ads) {
+        setAppStatus('extra_spinning')
+      } else {
+        canSpin = false
+      }
     } else {
-      setSpinButtonText('SPIN')
+      if (response.data.can_spin) {
+        setAppStatus('spinning')
+      } else if (response.data.can_spin_ads) {
+        showModal(
+          '🎉 Ganar más 🎉',
+          'Ve un anuncio para ganar un giro extra',
+          'Ver anuncio'
+        )
+      } else {
+        canSpin = false
+      }
+    }
+
+    if (!canSpin) {
+      showModal('⚠️ Error', rouletteData.message_no_spins, 'Intentar más tarde')
+      return
     }
   }
 
@@ -46,7 +105,7 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
     } else {
       setResult(response.data.isWin ? 'win' : 'lose')
       setShowResultModal(true)
-      setIsSpinning(false)
+      // setIsSpinning(false)
     }
   }
 
@@ -71,34 +130,39 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
     } else {
       setSpinButtonDisable(true)
     }
-    setSpinButtonText('VALIDAR')
+    setAppStatus('validating')
   }, [username, email])
+
+  // Handle spin button text when status changes
+  useEffect(() => {
+    const statusText = {
+      validating: 'VALIDAR',
+      spinning: 'GIRAR',
+      extra_spinning: 'GIRAR',
+    }
+    setSpinButtonText(statusText[appStatus])
+  }, [appStatus])
 
   const handleSpin = async () => {
     // No spin if already spinning
     if (isSpinning) return
 
     // set spin button to spinning
-    setIsSpinning(true)
+    // setIsSpinning(true)
     setResult(null)
     setShowResultModal(false)
-    setSpinButtonText('SPINING...')
 
     // validate or spin based in button status
-    if (spinButtonText === 'VALIDAR') {
+    if (appStatus === 'validating') {
       await handleValidateUser()
     } else {
       await handleSpinUser()
     }
 
-    // set spin button to spin
-    setSpinButtonText('SPIN')
-
     // if (!username || !email) {
     //   setShowErrorModal(true)
     //   return
     // }
-
 
     // try {
     //   // Call the API to get the spin result (win/lose only)
@@ -238,23 +302,12 @@ export default function RouletteGame({ user, wheelData, rouletteData }) {
       </div>
 
       {/* Error Modal */}
-      <ErrorModal
-        isOpen={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-      />
-
-      {/* Rate Limit Modal */}
-      <RateLimitModal
-        isOpen={showRateLimitModal}
-        onClose={() => setShowRateLimitModal(false)}
-        remainingMinutes={remainingMinutes}
-      />
-
-      {/* Result Modal */}
-      <ResultModal
-        isOpen={showResultModal}
-        result={result}
-        onClose={() => setShowResultModal(false)}
+      <Modal
+        isOpen={modalVisible}
+        onClose={() => setModalVisible(false)}
+        title={modalTitle}
+        message={modalMessage}
+        buttonText={modalButtonText}
       />
     </div>
   )

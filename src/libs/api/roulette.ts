@@ -1,9 +1,9 @@
 export async function getRouletteData(rouletteSlug: string) {
   const myHeaders = new Headers()
-  myHeaders.append('Authorization', `Token ${import.meta.env.VITE_API_TOKEN}`)
+  myHeaders.append('Authorization', `Token ${import.meta.env.PUBLIC_API_TOKEN}`)
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_BASE}/roulette/${rouletteSlug}/`,
+    `${import.meta.env.PUBLIC_API_BASE}/roulette/${rouletteSlug}/`,
     {
       method: 'GET',
       headers: myHeaders,
@@ -44,6 +44,8 @@ export async function getRouletteData(rouletteSlug: string) {
 
   // Add wheel data to data
   data.data.wheel_data = wheelData
+
+  console.log({ data })
 
   return data
 }

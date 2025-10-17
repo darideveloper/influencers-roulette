@@ -1,48 +1,22 @@
-export async function validateUser(username: string, email: string) {
+export async function validateUser(
+  name: string,
+  email: string,
+  roulette: string
+) {
+  // get data from api
+  const myHeaders = new Headers()
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append('Authorization', `Token ${import.meta.env.PUBLIC_API_TOKEN}`)
 
-    // Simullate all api json responses 
-    const responses = [
-        // canSpin:
-        {   
-            status: "ok",
-            message: "can spin",
-            data: {
-                "canSpin": true,
-                "canExtraSpin": true,
-            },
-            statusCode: 200
-        },
-        // canExtraSpin:
-        {
-            status: "ok",
-            message: "can extra",
-            data: {
-                "canSpin": false,
-                "canExtraSpin": true,
-            },
-            statusCode: 200
-        },
-        // noSpin:
-        {
-            status: "ok",
-            message: "can't spin",
-            data: {
-                "canSpin": false,
-                "canExtraSpin": false,
-            },
-            statusCode: 200
-        },
-        // invalidRequest:
-        // {
-        //     status: "error",
-        //     message: "missing username or email",
-        //     data: {},
-        //     statusCode: 400
-        // }
-    ]
-
-    // get a random response
-    const response = responses[Math.floor(Math.random() * responses.length)];
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return response
+  const response = await fetch(
+    `${import.meta.env.PUBLIC_API_BASE}/participant/validate/`,
+    {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify({ name, email, roulette }),
+    }
+  )
+  const data = await response.json()
+  console.log({ data })
+  return data
 }
