@@ -57,29 +57,34 @@ export default function WheelSection({ status = 'ready_to_spin', wheelConfig, on
 
       const baseRotation = 360 * 3
       let extraRotation = 0
+      let elemIndex = 0
 
       if (award) {
         // Get award index
         const awardIndex = wheelConfig.findIndex(section => section.isWin === true && section.image === award.image)
 
-        // Calulate rotation based on award position
-        extraRotation = - awardIndex * 45 - 45/2
+        elemIndex = awardIndex
+
       } else {
         
         // get random no award rotation
         const noAwardElements = wheelConfig.filter(section => section.isWin === false)
         const noAwardElement = noAwardElements[Math.floor(Math.random() * noAwardElements.length)]
-        const noAwardIndex = noAwardElements.findIndex(section => section.id === noAwardElement.id)
+        const noAwardIndex = wheelConfig.findIndex(section => section === noAwardElement)
 
-        // Calulate rotation based on award position
-        extraRotation = - noAwardIndex * 45 - 45/2
+        console.log({noAwardElements, noAwardElement, noAwardIndex})
+      
+        elemIndex = noAwardIndex
       }
+
+      // Calulate rotation based on award position
+      extraRotation = - elemIndex * 45 - 45/2
 
       // Calculate final rotation
       const finalRotation = baseRotation + extraRotation
     
       // Set rotation
-      console.log({finalRotation, extraRotation})
+      console.log({finalRotation, extraRotation, elemIndex})
       setRotation(finalRotation)
 
       // Run onSpinEnd callback when animation ends
