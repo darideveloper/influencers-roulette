@@ -33,7 +33,7 @@ const generateWheelSections = (wheelConfig) => {
       id: i,
       pathData,
       color: wheelConfig[i].color,
-      imageUrl: wheelConfig[i].image,
+      image: wheelConfig[i].image,
       imageX: contentX - 20,
       imageY: contentY - 20,
       imageRotation: contentRotation,
@@ -45,14 +45,42 @@ const generateWheelSections = (wheelConfig) => {
   return wheelSections;
 };
 
-export default function WheelSection({ status = 'ready_to_spin', wheelConfig, onSpinEnd = () => {}}) {
+export default function WheelSection({ status = 'ready_to_spin', wheelConfig, onSpinEnd = () => {}, award = null}) {
 
   const [rotation, setRotation] = useState(0)
 
   useEffect(() => {
+
+    console.log({wheelConfig, award, status})
+
     if (status === 'spinning' || status === 'extra_spinning') {
-      // Show roation animation
-      setRotation(360 * 3)
+
+      const baseRotation = 360 * 3
+      let extraRotation = 0
+
+      if (award) {
+        // Get award index
+        const awardIndex = wheelConfig.findIndex(section => section.isWin === true && section.image === award.image)
+
+        // Calulate rotation based on award position
+        extraRotation = - awardIndex * 45 - 45/2
+      } else {
+        
+        // get random no award rotation
+        const noAwardElements = wheelConfig.filter(section => section.isWin === false)
+        const noAwardElement = noAwardElements[Math.floor(Math.random() * noAwardElements.length)]
+        const noAwardIndex = noAwardElements.findIndex(section => section.id === noAwardElement.id)
+
+        // Calulate rotation based on award position
+        extraRotation = - noAwardIndex * 45 - 45/2
+      }
+
+      // Calculate final rotation
+      const finalRotation = baseRotation + extraRotation
+    
+      // Set rotation
+      console.log({finalRotation, extraRotation})
+      setRotation(finalRotation)
 
       // Run onSpinEnd callback when animation ends
       setTimeout(() => {
@@ -89,7 +117,7 @@ export default function WheelSection({ status = 'ready_to_spin', wheelConfig, on
         {wheelSections.map((section) => (
           <image
             key={`image-${section.id}`}
-            href={section.imageUrl}
+            href={section.image}
             x={section.imageX}
             y={section.imageY}
             width="40"

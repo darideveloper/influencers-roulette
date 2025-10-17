@@ -36,11 +36,11 @@ export default function RouletteGame({ rouletteData }) {
   // Modals ads state
   const [adModalVisible, setAdModalVisible] = useState(false)
 
-  // Spinning status
+  // Spinning type status
   const [isExtraSpinning, setIsExtraSpinning] = useState(false)
 
   // Main app status
-  // validating, ready_to_spin, ready_to_extra_spin, spinning, extra_spinning, after_spin, win, lose
+  // validating, ready_to_spin, ready_to_extra_spin, waiting_api, spinning, extra_spinning, after_spin, win, lose
   const [appStatus, setAppStatus] = useState('validating')
 
   // Award state
@@ -89,6 +89,8 @@ export default function RouletteGame({ rouletteData }) {
   async function handleValidateUser() {
     const response = await validateUser(username, email, rouletteData.slug)
 
+    console.log({"data": response.data})
+
     // Show validation error
     if (response.status != 'success') {
       showModal(
@@ -96,7 +98,6 @@ export default function RouletteGame({ rouletteData }) {
         messages.validate[response.message] || response.message,
         'OK'
       )
-      return
     }
 
     // No allow to regular spin if can't spin
@@ -106,7 +107,6 @@ export default function RouletteGame({ rouletteData }) {
       !response.data.can_spin_ads
     ) {
       showModal('⚠️ Error', rouletteData.message_no_spins, 'OK')
-      return
     }
 
     // Show ad modal if can spin ads
@@ -135,10 +135,18 @@ export default function RouletteGame({ rouletteData }) {
 
   async function handleSpinUser() {
     // Updatye status
-    if (appStatus === 'ready_to_spin') {
-      setAppStatus('spinning')
-    } else if (appStatus === 'ready_to_extra_spin') {
-      setAppStatus('extra_spinning')
+    // if (appStatus === 'ready_to_spin') {
+    //   setAppStatus('spinning')
+    // } else if (appStatus === 'ready_to_extra_spin') {
+    //   setAppStatus('extra_spinning')
+    // } else {
+    //   return
+    // }
+
+    const initialStatus = appStatus
+
+    if (appStatus === 'ready_to_spin' || appStatus === 'ready_to_extra_spin') {
+      setAppStatus('waiting_api')
     } else {
       return
     }
@@ -156,6 +164,13 @@ export default function RouletteGame({ rouletteData }) {
 
     if (response.data.award) {
       setAward(response.data.award)
+    } 
+
+    // Set spinning status
+    if (initialStatus === 'ready_to_spin') {
+      setAppStatus('spinning')
+    } else if (initialStatus === 'ready_to_extra_spin') {
+      setAppStatus('extra_spinning')
     } 
   }
 
@@ -382,6 +397,7 @@ export default function RouletteGame({ rouletteData }) {
           wheelConfig={rouletteData.wheel_data}
           status={appStatus}
           onSpinEnd={() => setAppStatus('after_spin')}
+          award={award}
         />
       </div>
 
