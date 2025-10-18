@@ -12,6 +12,7 @@ const { slug } = Astro.params as { slug: string }
 
 // Get roulette data
 const rouletteData = await getRouletteData(slug)
+console.log({rouletteData})
 
 // Redirect to 404 if roulette data is not found
 if (rouletteData.status == 'error') {
@@ -22,11 +23,14 @@ if (rouletteData.status == 'error') {
 const googleAdsCode = rouletteData.data.google_ads_code
 const googleAdsScript = googleAdsCode.split('</script>')[0] + '</script>'
 const googleAdsScriptSrc = googleAdsScript.split('src="')[1].split('"')[0]
+console.log({googleAdsScript, googleAdsScriptSrc})
 
 // Get each part of the ins: client, slot, format
 const googleAdsClient = googleAdsCode.split('data-ad-client="')[1].split('"')[0]
 const googleAdsSlot = googleAdsCode.split('data-ad-slot="')[1].split('"')[0]
 const googleAdsFormat = googleAdsCode.split('data-ad-format="')[1].split('"')[0]
+
+console.log({googleAdsClient, googleAdsSlot, googleAdsFormat})
 ---
 
 <Layout googleAdsScriptSrc={googleAdsScriptSrc}>

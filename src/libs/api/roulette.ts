@@ -13,10 +13,12 @@ export async function getRouletteData(rouletteSlug: string) {
 
   // Debug response if error
   if (!response.ok) {
-    console.error('Error fetching roulette data:', response.statusText)
+    console.log({response})
+    console.error('Error fetching roulette data:', response)
     return {
       status: 'error',
       message: 'Error fetching roulette data',
+      data: null,
     }
   }
 
