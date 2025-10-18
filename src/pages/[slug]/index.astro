@@ -17,9 +17,19 @@ const rouletteData = await getRouletteData(slug)
 if (rouletteData.status == 'error') {
   return Astro.redirect('/404')
 }
+
+// Get google ads src script
+const googleAdsCode = rouletteData.data.google_ads_code
+const googleAdsScript = googleAdsCode.split('</script>')[0] + '</script>'
+const googleAdsScriptSrc = googleAdsScript.split('src="')[1].split('"')[0]
+
+// Get each part of the ins: client, slot, format
+const googleAdsClient = googleAdsCode.split('data-ad-client="')[1].split('"')[0]
+const googleAdsSlot = googleAdsCode.split('data-ad-slot="')[1].split('"')[0]
+const googleAdsFormat = googleAdsCode.split('data-ad-format="')[1].split('"')[0]
 ---
 
-<Layout>
+<Layout googleAdsScriptSrc={googleAdsScriptSrc}>
   <Background src={rouletteData.data.bg_image} />
 
   <main
@@ -28,6 +38,11 @@ if (rouletteData.status == 'error') {
     <RouletteGame
       client:load
       rouletteData={rouletteData.data}
+      googleAds={{
+        client: googleAdsClient,
+        slot: googleAdsSlot,
+        format: googleAdsFormat,
+      }}
     />
   </main>
 </Layout>

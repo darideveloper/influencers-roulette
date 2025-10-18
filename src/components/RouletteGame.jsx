@@ -12,7 +12,11 @@ import AdModal from './roulette/AdModal'
 import { validateUser } from '../libs/api/validation'
 import { spinUser } from '../libs/api/spin'
 
-export default function RouletteGame({ rouletteData }) {
+// Utils
+import GoogleAd from './GoogleAd'
+
+
+export default function RouletteGame({ rouletteData, googleAds }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [result, setResult] = useState(null)
@@ -47,20 +51,7 @@ export default function RouletteGame({ rouletteData }) {
   const [award, setAward] = useState(null)
 
   // google ads
-  const adsCode = `<script
-        async
-        src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4509450751077172'
-        crossorigin='anonymous'
-      ></script>
-      <ins
-        class='adsbygoogle'
-        style='display:block'
-        data-ad-client='ca-pub-4509450751077172'
-        data-ad-slot='6872606708'
-        data-ad-format='auto'
-        data-full-width-responsive='true'
-      ></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>`
+  const adsCode = ``
 
   // Map backend messages
   const messages = {
@@ -349,8 +340,12 @@ export default function RouletteGame({ rouletteData }) {
       className='max-w-2xl mx-auto w-full px-2 sm:px-4 flex flex-col items-center'
       style={{ maxHeight: '100vh' }}
     >
-      {/* Insert google ads as html */}
-      <div dangerouslySetInnerHTML={{ __html: adsCode }} />
+  
+      <GoogleAd
+        client={googleAds.client}
+        slot={googleAds.slot}
+        format={googleAds.format}
+      />
 
       {/* Icons */}
       <img
