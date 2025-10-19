@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
+import GoogleAd from '../GoogleAd'
 
 export default function AdModal({
   isOpen,
-  addHtmlCode,
+  googleAdsConfig,
   className = '',
   onClose = () => {},
 }) {
@@ -71,7 +72,17 @@ export default function AdModal({
           {countdown > 0 ? countdown : '✕'}
         </button>
 
-        <div dangerouslySetInnerHTML={{ __html: addHtmlCode }} />
+        {isOpen && googleAdsConfig && (
+          <div className="w-full h-full flex items-center justify-center p-4">
+            <GoogleAd
+              key={Date.now()}
+              client={googleAdsConfig.client}
+              slot={googleAdsConfig.slot}
+              format={googleAdsConfig.format}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
