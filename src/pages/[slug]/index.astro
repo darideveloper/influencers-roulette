@@ -30,7 +30,9 @@ const googleAdsClient = googleAdsCode.split('data-ad-client="')[1].split('"')[0]
 const googleAdsSlot = googleAdsCode.split('data-ad-slot="')[1].split('"')[0]
 const googleAdsFormat = googleAdsCode.split('data-ad-format="')[1].split('"')[0]
 
-console.log({googleAdsClient, googleAdsSlot, googleAdsFormat})
+
+// Get url param "test-google-ad"
+const testGoogleAd = Astro.url.searchParams.get('test-google-ad') ? true : false
 ---
 
 <Layout googleAdsScriptSrc={googleAdsScriptSrc}>
@@ -47,6 +49,7 @@ console.log({googleAdsClient, googleAdsSlot, googleAdsFormat})
         slot: googleAdsSlot,
         format: googleAdsFormat,
       }}
+      testGoogleAd={testGoogleAd}
     />
   </main>
 </Layout>

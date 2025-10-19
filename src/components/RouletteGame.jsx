@@ -12,13 +12,15 @@ import { spinUser } from '../libs/api/spin'
 // Utils
 import GoogleAd from './GoogleAd'
 
-
-export default function RouletteGame({ rouletteData, googleAds }) {
-
+export default function RouletteGame({
+  rouletteData,
+  googleAds,
+  testGoogleAd = false,
+}) {
   // Client data
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
-  
+
   // Spin button state
   const [spinButtonText, setSpinButtonText] = useState('VALIDAR')
   const [spinButtonDisable, setSpinButtonDisable] = useState(true)
@@ -71,7 +73,7 @@ export default function RouletteGame({ rouletteData, googleAds }) {
   async function handleValidateUser() {
     const response = await validateUser(username, email, rouletteData.slug)
 
-    console.log({"data": response.data})
+    console.log({ data: response.data })
 
     // Show validation error
     if (response.status != 'success') {
@@ -116,7 +118,6 @@ export default function RouletteGame({ rouletteData, googleAds }) {
   }
 
   async function handleSpinUser() {
-
     const initialStatus = appStatus
 
     if (appStatus === 'ready_to_spin' || appStatus === 'ready_to_extra_spin') {
@@ -138,14 +139,14 @@ export default function RouletteGame({ rouletteData, googleAds }) {
 
     if (response.data.award) {
       setAward(response.data.award)
-    } 
+    }
 
     // Set spinning status
     if (initialStatus === 'ready_to_spin') {
       setAppStatus('spinning')
     } else if (initialStatus === 'ready_to_extra_spin') {
       setAppStatus('extra_spinning')
-    } 
+    }
   }
 
   // Enable spin button when there are username and email
@@ -200,8 +201,7 @@ export default function RouletteGame({ rouletteData, googleAds }) {
 
   const handleSpin = async () => {
     // No spin if already spinning
-    if (appStatus === 'spinning' || appStatus === 'extra_spinning')
-      return;
+    if (appStatus === 'spinning' || appStatus === 'extra_spinning') return
 
     // validate or spin based in button status
     if (appStatus === 'validating') {
@@ -216,12 +216,13 @@ export default function RouletteGame({ rouletteData, googleAds }) {
       className='max-w-2xl mx-auto w-full px-2 sm:px-4 flex flex-col items-center'
       style={{ maxHeight: '100vh' }}
     >
-  
-      {/* <GoogleAd
-        client={googleAds.client}
-        slot={googleAds.slot}
-        format={googleAds.format}
-      /> */}
+      {testGoogleAd && (
+        <GoogleAd
+          client={googleAds.client}
+          slot={googleAds.slot}
+          format={googleAds.format}
+        />
+      )}
 
       {/* Icons */}
       <img
